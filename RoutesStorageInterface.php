@@ -70,7 +70,7 @@ interface RoutesStorageInterface
      *
      * @param string $method
      * @param string $pattern
-     * @return Model|false
+     * @return array|false
     */
     public function getRoute($method, $pattern);
 }

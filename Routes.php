@@ -51,6 +51,18 @@ class Routes implements RoutesInterface
     }
 
     /**
+     * Set routes status
+     *
+     * @param array     $filterfilter
+     * @param integer   $status
+     * @return boolean
+     */
+    public function setRoutesStatus($filter = [], $status)
+    {
+        return $this->adapter->setRoutesStatus($filter,$status);
+    }
+
+    /**
      * Add template route
      *
      * @param string $pattern
@@ -69,7 +81,7 @@ class Routes implements RoutesInterface
             'handler_class'  => $handlerClass,
             'handler_method' => $handlerMethod,
             'auth'           => $auth,
-            'type'           => Self::TYPE_PAGE,
+            'type'           => Self::PAGE,
             'page_name'      => $pageName,
             'template_name'  => $templateName
         ];
@@ -99,7 +111,7 @@ class Routes implements RoutesInterface
             'handler_class'     => $handlerClass,
             'handler_method'    => $handlerMethod,
             'auth'              => $auth,
-            'type'              => Self::TYPE_PAGE,
+            'type'              => Self::PAGE,
             'extension_name'    => $extension,
             'page_name'         => $pageName,
             'name'              => $name,
@@ -127,7 +139,7 @@ class Routes implements RoutesInterface
             'handler_class'  => $handlerClass,
             'handler_method' => $handlerMethod,
             'auth'           => $auth,
-            'type'           => Self::TYPE_API,
+            'type'           => Self::API,
             'extension_name' => $extension
         ];
 
@@ -174,9 +186,9 @@ class Routes implements RoutesInterface
      *
      * @param string $method
      * @param string $pattern
-     * @return Model|false
+     * @return array|false
     */
-    public function get($method, $pattern)
+    public function getRoute($method, $pattern)
     {
         return $this->adapter->getRoute($method,$pattern);
     }
@@ -223,7 +235,7 @@ class Routes implements RoutesInterface
      */
     public function getRouteUrl($pattern, array $data = [], array $queryParams = [])
     {      
-        if ($this->hasPlaceholder($pattern) == false) {
+        if ($this->hasPlaceholder($pattern) == false) {           
             return $pattern;
         }
 
@@ -255,7 +267,7 @@ class Routes implements RoutesInterface
             return $pattern;
         }
 
-        $url = implode('', $segments);
+        $url = implode('',$segments);
         if ($queryParams) {
             $url .= '?' . http_build_query($queryParams);
         }
