@@ -75,6 +75,7 @@ class Routes implements RoutesInterface
      */
     public function saveTemplateRoute($pattern, $handlerClass, $handlerMethod, $templateName, $pageName, $auth = null)
     {
+        $handlerMethod = ($handlerMethod == null) ? "loadPage" : $handlerMethod;
         $route = [
             'method'         => "GET",
             'pattern'        => $pattern . $this->getLanguagePattern($pattern),
@@ -85,7 +86,7 @@ class Routes implements RoutesInterface
             'page_name'      => $pageName,
             'template_name'  => $templateName
         ];
-       
+        
         return $this->adapter->addRoute($route);
     }
 
