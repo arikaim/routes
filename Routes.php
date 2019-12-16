@@ -14,6 +14,7 @@ use FastRoute\RouteParser\Std;
 use Arikaim\Core\Routes\RoutesStorageInterface;
 use Arikaim\Core\Interfaces\RoutesInterface;
 use Arikaim\Core\Interfaces\CacheInterface;
+use Exception;
 
 /**
  * Routes storage
@@ -242,8 +243,12 @@ class Routes implements RoutesInterface
 
         $segments = [];      
         $parser = new Std();
-        $expressions = array_reverse($parser->parse($pattern));
-
+        
+        try {
+            $expressions = array_reverse($parser->parse($pattern));
+        } catch (Exception $e) {
+        }
+       
         foreach ($expressions as $expression) {
 
             foreach ($expression as $segment) {               
@@ -291,4 +296,24 @@ class Routes implements RoutesInterface
 
         return $routes;
     }
+
+    /**
+     * Return true if route pattern is valid
+     *
+     * @param string $pattern
+     * @return boolean
+     */
+    public function isValidPattern($pattern)
+    {
+        $parser = new Std();
+        try {
+            $parser->parse($pattern);
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    
 }
