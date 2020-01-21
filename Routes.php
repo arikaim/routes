@@ -166,12 +166,6 @@ class Routes implements RoutesInterface
 
         $this->cache->delete('routes.list');
         
-        if ($type == Self::HOME_PAGE) {
-            $homePageRoute = $this->getRoutes(['type' => Self::HOME_PAGE]);
-            if (empty($homePageRoute) == false) {
-                return false;
-            }
-        }
         if (Route::validate("GET",$pattern,$this->getAllRoutes()) == false) {
             return false;
         }
