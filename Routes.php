@@ -78,7 +78,7 @@ class Routes implements RoutesInterface
      */
     public function saveTemplateRoute($pattern, $handlerClass, $handlerMethod, $templateName, $pageName, $auth = null, $replace = false, $redirectUrl = null, $type = Self::PAGE)
     {
-        $handlerMethod = ($handlerMethod == null) ? "load" : $handlerMethod;
+        $handlerMethod = ($handlerMethod == null) ? "pageLoad" : $handlerMethod;
 
         $route = [
             'method'         => "GET",
