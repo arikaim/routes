@@ -147,9 +147,14 @@ class Routes implements RoutesInterface
         }
 
         $languagePattern = Route::getLanguagePattern($pattern);
+        // check if exist with language pattern
         if ($this->has('GET',$pattern . $languagePattern) == true) {
             return false;
         }
+        if ($this->has('GET',$pattern) == true) {
+            return false;
+        }
+
         $pattern = ($withLanguage == true) ? $pattern . $languagePattern : $pattern;
 
         $route = [
