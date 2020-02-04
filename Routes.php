@@ -73,13 +73,26 @@ class Routes implements RoutesInterface
      * @param integer $auth
      * @param boolean $replace 
      * @param string|null $redirectUrl 
-     * @param integer $type
+     * @param integer $type 
+     * @param boolean $withLanguage
      * @return bool
      */
-    public function saveTemplateRoute($pattern, $handlerClass, $handlerMethod, $templateName, $pageName, $auth = null, $replace = false, $redirectUrl = null, $type = Self::PAGE)
+    public function saveTemplateRoute($pattern, $handlerClass, $handlerMethod, $templateName, $pageName, $auth = null, $replace = false, $redirectUrl = null, $type = Self::PAGE, $withLanguage = true)
     {
         $handlerMethod = ($handlerMethod == null) ? "pageLoad" : $handlerMethod;
+        $languagePattern = Route::getLanguagePattern($pattern);
+        
+        if ($replace == true) {
+            $this->delete('GET',$pattern);
+            $this->delete('GET',$pattern . $languagePattern);
+            if ($type == Self::HOME_PAGE) {
+                $this->deleteHomePage();
+            }
+        }
 
+        if ($withLanguage == true) {
+            $pattern .= $languagePattern;
+        }
         $route = [
             'method'         => "GET",
             'pattern'        => $pattern,
@@ -92,13 +105,6 @@ class Routes implements RoutesInterface
             'redirect_url'   => $redirectUrl
         ];
         
-        if ($replace == true) {
-            $this->delete('GET',$pattern);
-            if ($type == Self::HOME_PAGE) {
-                $this->deleteHomePage();
-            }
-        }
-
         $this->cache->delete('routes.list');
 
         if (Route::validate("GET",$pattern,$this->getAllRoutes()) == false) {
