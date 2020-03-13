@@ -15,6 +15,16 @@ namespace Arikaim\Core\Routes;
 interface RoutesStorageInterface
 {    
     /**
+     * Save route redirect url
+     *
+     * @param string $method
+     * @param string $pattern
+     * @param string $url
+     * @return boolean
+     */
+    public function saveRedirectUrl($method, $pattern, $url);
+
+    /**
      * Get extension routes
      *
      * @param array $filterfilter

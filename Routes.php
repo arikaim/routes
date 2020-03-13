@@ -63,6 +63,19 @@ class Routes implements RoutesInterface
     }
 
     /**
+     * Save route redirect url
+     *
+     * @param string $method
+     * @param string $pattern
+     * @param string $url
+     * @return boolean
+     */
+    public function setRedirectUrl($method, $pattern, $url)
+    {
+        return $this->adapter->saveRedirectUrl($method,$pattern,$url);
+    }
+
+    /**
      * Add template route
      *
      * @param string $pattern
