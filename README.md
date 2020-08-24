@@ -7,7 +7,7 @@ This package is part of arikaim/core package.
 
 
 #### Requirements 
-  * PHP 7.1
+  * PHP 7.1, 7.2, 7.3
 
 
 #### Installation

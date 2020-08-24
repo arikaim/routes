@@ -26,7 +26,7 @@ class Route
      */
     public static function hasPlaceholder($pattern)
     {
-        return preg_match("/\{(.*?)\}/",$pattern);
+        return \preg_match("/\{(.*?)\}/",$pattern);
     }
 
     /**
@@ -37,7 +37,7 @@ class Route
      */
     public static function getLanguagePattern($path)
     {        
-        return (substr($path,-1) == "/") ? "[{language:[a-z]{2}}/]" : "[/{language:[a-z]{2}}/]";
+        return (\substr($path,-1) == "/") ? "[{language:[a-z]{2}}/]" : "[/{language:[a-z]{2}}/]";
     }
 
     /**
@@ -48,7 +48,7 @@ class Route
      */
     public static function getPagePattern($path = '')
     {
-        return (substr($path,-1) == "/") ? "[{page:\d+}]" : "[/{page:\d+}]";
+        return (\substr($path,-1) == "/") ? "[{page:\d+}]" : "[/{page:\d+}]";
     }
 
     /**
@@ -68,18 +68,17 @@ class Route
         $segments = [];      
         $parser = new Std();
       
-        $expressions = array_reverse($parser->parse($pattern));
+        $expressions = \array_reverse($parser->parse($pattern));
          
         foreach ($expressions as $expression) {
 
             foreach ($expression as $segment) {               
-                if (is_string($segment) == true) {
+                if (\is_string($segment) == true) {
                     $segments[] = $segment;
                     continue;
                 }
-                if (array_key_exists($segment[0],$data) == false) {
+                if (\array_key_exists($segment[0],$data) == false) {
                     $segments = [];
-                    $segmentName = $segment[0];
                     break;
                 }
                 $segments[] = $data[$segment[0]];
@@ -94,9 +93,9 @@ class Route
             return $pattern;
         }
 
-        $url = implode('',$segments);
+        $url = \implode('',$segments);
         if ($queryParams) {
-            $url .= '?' . http_build_query($queryParams);
+            $url .= '?' . \http_build_query($queryParams);
         }
 
         return $url;

@@ -95,17 +95,20 @@ class Routes implements RoutesInterface
         $handlerMethod = ($handlerMethod == null) ? "pageLoad" : $handlerMethod;
         $languagePattern = Route::getLanguagePattern($pattern);
         
-        if ($replace == true) {
+        if ($replace == true) {           
             $this->delete('GET',$pattern);
             $this->delete('GET',$pattern . $languagePattern);
             if ($type == Self::HOME_PAGE) {
                 $this->deleteHomePage();
-            }
+            }           
         }
 
-        if ($withLanguage == true) {
-            $pattern .= $languagePattern;
+        if (Route::isValidPattern($pattern) == false) {           
+            return false;
         }
+
+        $pattern = ($withLanguage == true) ? $pattern . $languagePattern : $pattern;
+
         $route = [
             'method'         => "GET",
             'pattern'        => $pattern,
@@ -333,7 +336,7 @@ class Routes implements RoutesInterface
     public function getAllRoutes()
     {
         $routes = $this->cache->fetch('routes.list');
-        if (is_array($routes) == false) {
+        if (\is_array($routes) == false) {
             $routes = $this->getRoutes(['status' => 1]);  
             $this->cache->save('routes.list',$routes,4);         
         }
