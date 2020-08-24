@@ -103,12 +103,21 @@ class Routes implements RoutesInterface
             }           
         }
 
+        if ($this->has('GET',$pattern) == true) {
+            return false;
+        }
+
         if (Route::isValidPattern($pattern) == false) {           
             return false;
         }
 
         $pattern = ($withLanguage == true) ? $pattern . $languagePattern : $pattern;
 
+        // check if exist with language pattern
+        if ($this->has('GET',$pattern) == true) {
+            return false;
+        }
+       
         $route = [
             'method'         => "GET",
             'pattern'        => $pattern,
