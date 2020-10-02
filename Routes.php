@@ -92,7 +92,7 @@ class Routes implements RoutesInterface
      */
     public function saveTemplateRoute($pattern, $handlerClass, $handlerMethod, $templateName, $pageName, $auth = null, $replace = false, $redirectUrl = null, $type = Self::PAGE, $withLanguage = true)
     {
-        $handlerMethod = ($handlerMethod == null) ? "pageLoad" : $handlerMethod;
+        $handlerMethod = ($handlerMethod == null) ? 'pageLoad' : $handlerMethod;
         $languagePattern = Route::getLanguagePattern($pattern);
         
         if ($replace == true) {           
@@ -119,7 +119,7 @@ class Routes implements RoutesInterface
         }
        
         $route = [
-            'method'         => "GET",
+            'method'         => 'GET',
             'pattern'        => $pattern,
             'handler_class'  => $handlerClass,
             'handler_method' => $handlerMethod,
@@ -132,7 +132,7 @@ class Routes implements RoutesInterface
         
         $this->cache->delete('routes.list');
 
-        if (Route::validate("GET",$pattern,$this->getAllRoutes()) == false) {
+        if (Route::validate('GET',$pattern,$this->getAllRoutes()) == false) {
             return false;
         }
      
@@ -189,7 +189,7 @@ class Routes implements RoutesInterface
         $pattern = ($withLanguage == true) ? $pattern . $languagePattern : $pattern;
 
         $route = [
-            'method'            => "GET",
+            'method'            => 'GET',
             'pattern'           => $pattern,
             'handler_class'     => $handlerClass,
             'handler_method'    => $handlerMethod,
@@ -202,7 +202,7 @@ class Routes implements RoutesInterface
 
         $this->cache->delete('routes.list');
         
-        if (Route::validate("GET",$pattern,$this->getAllRoutes()) == false) {
+        if (Route::validate('GET',$pattern,$this->getAllRoutes()) == false) {
             return false;
         }
 

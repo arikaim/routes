@@ -26,7 +26,7 @@ class Route
      */
     public static function hasPlaceholder($pattern)
     {
-        return \preg_match("/\{(.*?)\}/",$pattern);
+        return \preg_match('/\{(.*?)\}/',$pattern);
     }
 
     /**
@@ -37,7 +37,7 @@ class Route
      */
     public static function getLanguagePattern($path)
     {        
-        return (\substr($path,-1) == "/") ? "[{language:[a-z]{2}}/]" : "[/{language:[a-z]{2}}/]";
+        return (\substr($path,-1) == '/') ? '[{language:[a-z]{2}}/]' : '[/{language:[a-z]{2}}/]';
     }
 
     /**
@@ -48,7 +48,7 @@ class Route
      */
     public static function getPagePattern($path = '')
     {
-        return (\substr($path,-1) == "/") ? "[{page:\d+}]" : "[/{page:\d+}]";
+        return (\substr($path,-1) == '/') ? '[{page:\d+}]' : '[/{page:\d+}]';
     }
 
     /**
