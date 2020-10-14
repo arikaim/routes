@@ -27,6 +27,13 @@ class Routes implements RoutesInterface
     const HOME_PAGE = 3;
 
     /**
+     * Cache save time
+     *
+     * @var integer
+     */
+    public static $cacheSaveTime = 4;
+
+    /**
      * Routes storage adapter
      *
      * @var RoutesStorageInterface
@@ -42,12 +49,16 @@ class Routes implements RoutesInterface
 
     /**
      * Constructor
+     * 
+     * @param RoutesStorageInterface $adapter 
+     * @param CacheInterface $cache
      */
-
     public function __construct(RoutesStorageInterface $adapter, CacheInterface $cache)
     {
         $this->adapter = $adapter;    
         $this->cache = $cache;
+
+        Self::$cacheSaveTime = \defined('CACHE_SAVE_TIME') ? \constant('CACHE_SAVE_TIME') : Self::$cacheSaveTime;
     }
 
     /**
@@ -189,15 +200,16 @@ class Routes implements RoutesInterface
         $pattern = ($withLanguage == true) ? $pattern . $languagePattern : $pattern;
 
         $route = [
-            'method'            => 'GET',
-            'pattern'           => $pattern,
-            'handler_class'     => $handlerClass,
-            'handler_method'    => $handlerMethod,
-            'auth'              => $auth,
-            'type'              => $type,
-            'extension_name'    => $extension,
-            'page_name'         => $pageName,
-            'name'              => $name,
+            'method'         => 'GET',
+            'pattern'        => $pattern,
+            'handler_class'  => $handlerClass,
+            'handler_method' => $handlerMethod,
+            'auth'           => $auth,
+            'type'           => $type,
+            'extension_name' => $extension,
+            'page_name'      => $pageName,
+            'name'           => $name,
+            'regex'          => null
         ];
 
         $this->cache->delete('routes.list');
@@ -244,6 +256,7 @@ class Routes implements RoutesInterface
             'handler_method' => $handlerMethod,
             'auth'           => $auth,
             'type'           => Self::API,
+            'regex'          => null,
             'extension_name' => $extension
         ];
         
@@ -344,12 +357,29 @@ class Routes implements RoutesInterface
      */
     public function getAllRoutes()
     {
-        $routes = $this->cache->fetch('routes.list');
+        $routes = $this->cache->fetch('routes.list');  
         if (\is_array($routes) == false) {
             $routes = $this->getRoutes(['status' => 1]);  
-            $this->cache->save('routes.list',$routes,4);         
+            $this->cache->save('routes.list',$routes,Self::$cacheSaveTime);         
         }
 
+        return $routes;
+    }
+
+    /**
+     * Get routes list for request method
+     *
+     * @param string $method
+     * @return array
+     */
+    public function searchRoutes($method)
+    {
+        $routes = $this->cache->fetch('routes.list.' . $method);  
+        if (\is_array($routes) == false) {
+            $routes = $this->adapter->searchRoutes($method);
+            $this->cache->save('routes.list.' . $method,$routes,Self::$cacheSaveTime);   
+        }
+        
         return $routes;
     }
 }
