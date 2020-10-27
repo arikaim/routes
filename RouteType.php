@@ -1,0 +1,137 @@
+<?php
+/**
+ * Arikaim
+ *
+ * @link        http://www.arikaim.com
+ * @copyright   Copyright (c)  Konstantin Atanasov <info@arikaim.com>
+ * @license     http://www.arikaim.com/license
+ * 
+ */
+namespace Arikaim\Core\Routes;
+
+/**
+ * Route types
+ */
+class RouteType 
+{
+    const INSTALL_PAGE_URL_PATH = 'admin/install';
+    
+    const UNKNOW_TYPE    = 0;
+    const HOME_PAGE_URL  = 1;
+    const ADMIN_PAGE_URL = 2;
+    const SYSTEM_API_URL = 3;
+    const API_URL        = 4;
+
+    /**
+     * Get route type
+     */
+    public static function getType($url) 
+    {
+        $url = \rtrim(\str_replace(BASE_PATH,'',$url),'/');
+        $segments = \explode('/',$url);
+        $count = \count($segments);
+    
+        // check for home page
+        if (($count == 1) || ($count == 2 && Self::isLanguageSegment($segments) == true)) {
+            return Self::HOME_PAGE_URL;
+        }
+        // check for admin 
+        if (($segments[1] == 'admin') && ($count <= 3)) {
+            return Self::ADMIN_PAGE_URL;
+        }
+        // check for system api 
+        $segments[1] = $segments[1] ?? '';
+        $segments[2] = $segments[2] ?? '';
+        if ($segments[1] == 'core' && $segments[2] == 'api') {
+            return Self::SYSTEM_API_URL;
+        }
+        // check for api 
+        if ($segments[1] == 'api') {
+            return Self::API_URL;
+        }
+
+        return Self::UNKNOW_TYPE;
+    }
+
+    /**
+     * Return true if last url segment is language 
+     *
+     * @param array $urlSegments
+     * @return boolean
+     */
+    public static function isLanguageSegment(array $urlSegments)
+    {
+        return (\strlen(\last($urlSegments)) == 2);
+    }
+
+    /**
+     * Return true if request url is system api
+     *
+     * @param string $url
+     * @return boolean
+     */
+    public static function isSystemApiUrl($url)
+    {
+        $path = \str_replace(BASE_PATH,'',$url);
+ 
+        return (\substr($path,0,10) == '/core/api/');
+    }
+
+    /**
+     * Return true if request url is admin page 
+     *
+     * @param string $url
+     * @return boolean
+     */
+    public static function isAdminPage($url)
+    {
+        $path = \str_replace(BASE_PATH,'',$url);
+
+        return (\substr($path,0,6) == '/admin');
+    }
+
+    /**
+     * Return true if request is for installation 
+     *
+     * @return boolean
+     */
+    public static function isApiInstallRequest()
+    {
+        $uri = $_SERVER['REQUEST_URI'] ?? '';
+       
+        return (\substr($uri,-17) == 'core/api/install/');
+    }
+
+    /**
+     * Check for install page url
+     *
+     * @return boolean
+     */
+    public static function isInstallPage()
+    {
+        $uri = $_SERVER['REQUEST_URI'] ?? '';
+       
+        return (\substr($uri,-13) == Self::INSTALL_PAGE_URL_PATH);
+    }
+
+    /**
+     * Get install page url
+     *
+     * @return string
+     */
+    public static function getInstallPageUrl() : string
+    {
+        return DOMAIN . BASE_PATH . '/' . Self::INSTALL_PAGE_URL_PATH;
+    }
+
+    /**
+     * Return true if api url pattern is valid
+     *
+     * @param string $pattern
+     * @return boolean
+     */
+    public static function isValidApiRoutePattern($pattern)
+    {
+        return (\substr($pattern,0,4) == '/api');
+    }
+}

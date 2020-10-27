@@ -64,10 +64,8 @@ class Route
         if (Self::hasPlaceholder($pattern) == false) {           
             return $pattern;
         }
-
         $segments = [];      
         $parser = new Std();
-      
         $expressions = \array_reverse($parser->parse($pattern));
          
         foreach ($expressions as $expression) {

@@ -31,20 +31,18 @@ REGEX;
     const DEFAULT_DISPATCH_REGEX = '[^/]+';
 
     /**
-     * Parse route
+     * Parse route pattern
      *
-     * @param string $route
+     * @param string $routePattern
      * @return array
      */
-    public static function parse($route)
+    public static function parse($routePattern)
     {
-        $routeWithoutClosingOptionals = \rtrim($route, ']');
-        $numOptionals = \strlen($route) - \strlen($routeWithoutClosingOptionals);
+        $routeWithoutClosingOptionals = \rtrim($routePattern, ']');
+        $numOptionals = \strlen($routePattern) - \strlen($routeWithoutClosingOptionals);
 
-        // Split on [ while skipping placeholders
         $segments = \preg_split('~' . Self::VARIABLE_REGEX . '(*SKIP)(*F) | \[~x', $routeWithoutClosingOptionals);
         if ($numOptionals !== count($segments) - 1) {
-            // If there are any ] in the middle of the route, throw a more specific error message
             if (\preg_match('~' . Self::VARIABLE_REGEX . '(*SKIP)(*F) | \]~x', $routeWithoutClosingOptionals)) {
                 throw new Exception('Optional segments can only occur at the end of a route');
             }
@@ -52,17 +50,17 @@ REGEX;
         }
 
         $currentRoute = '';
-        $routeDatas = [];
+        $data = [];
         foreach ($segments as $n => $segment) {
             if ($segment === '' && $n !== 0) {
                 throw new Exception('Empty optional part');
             }
 
             $currentRoute .= $segment;
-            $routeDatas[] = Self::parsePlaceholders($currentRoute);
+            $data[] = Self::parsePlaceholders($currentRoute);
         }
         
-        return $routeDatas;
+        return $data;
     }
 
     /**
@@ -103,18 +101,18 @@ REGEX;
     /**
      * Create route regex
      *
-     * @param array $routeData
+     * @param array|string $routeData
      * @return string
      */
     public static function createRegex($routeData)
     {
+        $routeData = (\is_string($routeData) == true) ? Self::parse($routeData) : $routeData; 
         if (Self::isStaticRoute($routeData) == true) {
             return $routeData[0];
         }
-
-        list($regex,$vars) = Self::buildRegexForRoute($routeData);
-
-        return $regex;
+        $regex = Self::buildRegexForRoute($routeData);
+      
+        return ($regex !== false) ? $regex[0] : false;        
     }
 
     /**
@@ -123,31 +121,31 @@ REGEX;
      * @param array
      * @return array
      */
-    public static function buildRegexForRoute($routeData)
+    public static function buildRegexForRoute(array $routeData)
     {
         $regex = '';
         $variables = [];
         foreach ($routeData as $part) {
-            if (\is_string($part)) {
-                $regex .= \preg_quote($part, '~');
+            if (\is_string($part) == true) {
+                $regex .= \preg_quote($part,'~');
                 continue;
             }
+          
+            [$varName,$regexPart] = $part;
 
-            list($varName, $regexPart) = $part;
-
-            if (isset($variables[$varName])) {
-                continue;
+            if (isset($variables[$varName]) == true) {
+                return false;
             }
 
-            if (Self::regexHasCapturingGroups($regexPart)) {
-                continue;
+            if (Self::regexHasCapturingGroups($regexPart) == true) {
+                return false;
             }
 
             $variables[$varName] = $varName;
             $regex .= '(' . $regexPart . ')';
         }
 
-        return [$regex, $variables];
+        return [$regex,$variables];
     }
 
     /**

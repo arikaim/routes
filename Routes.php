@@ -13,6 +13,9 @@ use Arikaim\Core\Routes\RoutesStorageInterface;
 use Arikaim\Core\Interfaces\RoutesInterface;
 use Arikaim\Core\Interfaces\CacheInterface;
 use Arikaim\Core\Routes\Route;
+use Arikaim\Core\Routes\RouteType;
+use Arikaim\Core\Routes\RouteParser;
+use Exception;
 
 /**
  * Routes storage
@@ -59,6 +62,24 @@ class Routes implements RoutesInterface
         $this->cache = $cache;
 
         Self::$cacheSaveTime = \defined('CACHE_SAVE_TIME') ? \constant('CACHE_SAVE_TIME') : Self::$cacheSaveTime;
+    }
+
+    /**
+     * Resolve middlewares
+     *
+     * @param string $handlerClass
+     * @return array|null
+     */
+    protected function resolveMiddlewares($handlerClass)
+    {
+        if (\class_exists($handlerClass) == false) {
+            return null;
+        }
+
+        $controller = new $handlerClass();
+        $middlewares = $controller->getMiddlewares();
+
+        return (count($middlewares) > 0) ? $middlewares : null;
     }
 
     /**
@@ -129,6 +150,8 @@ class Routes implements RoutesInterface
             return false;
         }
        
+        $middlewares = $this->resolveMiddlewares($handlerClass);
+
         $route = [
             'method'         => 'GET',
             'pattern'        => $pattern,
@@ -138,7 +161,8 @@ class Routes implements RoutesInterface
             'type'           => $type,
             'page_name'      => $pageName,
             'template_name'  => $templateName,
-            'redirect_url'   => $redirectUrl
+            'redirect_url'   => $redirectUrl,
+            'middlewares'    => (empty($middlewares) == false) ? \json_encode($middlewares) : null
         ];
         
         $this->cache->delete('routes.list');
@@ -199,6 +223,7 @@ class Routes implements RoutesInterface
 
         $pattern = ($withLanguage == true) ? $pattern . $languagePattern : $pattern;
 
+        $middlewares = $this->resolveMiddlewares($handlerClass);
         $route = [
             'method'         => 'GET',
             'pattern'        => $pattern,
@@ -209,7 +234,8 @@ class Routes implements RoutesInterface
             'extension_name' => $extension,
             'page_name'      => $pageName,
             'name'           => $name,
-            'regex'          => null
+            'regex'          => null,
+            'middlewares'    => (empty($middlewares) == false) ? \json_encode($middlewares) : null
         ];
 
         $this->cache->delete('routes.list');
@@ -242,12 +268,18 @@ class Routes implements RoutesInterface
      * @param string $extension
      * @param integer|null $auth
      * @return bool
+     * @throws Exception
      */
     public function addApiRoute($method, $pattern, $handlerClass, $handlerMethod, $extension, $auth = null)
     {
         if (Route::isValidPattern($pattern) == false) {           
             return false;
+        }      
+        if (RouteType::isValidApiRoutePattern($pattern) == false) {
+            throw new Exception('Not valid api route pattern.',1);
         }
+
+        $middlewares = $this->resolveMiddlewares($handlerClass);
 
         $route = [
             'method'         => $method,
@@ -257,7 +289,8 @@ class Routes implements RoutesInterface
             'auth'           => $auth,
             'type'           => Self::API,
             'regex'          => null,
-            'extension_name' => $extension
+            'extension_name' => $extension,
+            'middlewares'    => (empty($middlewares) == false) ? \json_encode($middlewares) : null
         ];
         
         $this->cache->delete('routes.list');
@@ -370,16 +403,28 @@ class Routes implements RoutesInterface
      * Get routes list for request method
      *
      * @param string $method
+     * @param int|null $type
      * @return array
      */
-    public function searchRoutes($method)
+    public function searchRoutes($method, $type = null)
     {
-        $routes = $this->cache->fetch('routes.list.' . $method);  
+        $cacheItemkey = 'routes.list.' . $method . '.' . $type ?? 'all';
+        $routes = $this->cache->fetch($cacheItemkey);  
         if (\is_array($routes) == false) {
-            $routes = $this->adapter->searchRoutes($method);
-            $this->cache->save('routes.list.' . $method,$routes,Self::$cacheSaveTime);   
+            $routes = $this->adapter->searchRoutes($method,$type);
+            $this->cache->save($cacheItemkey,$routes,Self::$cacheSaveTime);   
         }
         
         return $routes;
+    }
+
+    /**
+     * Get home page route
+     *
+     * @return array
+     */
+    public function getHomePageRoute()
+    {
+        return $this->adapter->getHomePageRoute();
     }
 }
