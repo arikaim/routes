@@ -29,7 +29,7 @@ class MiddlewareFactory
      * @param string $class
      * @return object
      */
-    public static function create($class)
+    public static function create(string $class)
     {
         $instance = Self::$instances[$class] ?? null;  
         if (empty($instance) == true) {

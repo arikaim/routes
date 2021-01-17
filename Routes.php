@@ -14,7 +14,6 @@ use Arikaim\Core\Interfaces\RoutesInterface;
 use Arikaim\Core\Interfaces\CacheInterface;
 use Arikaim\Core\Routes\Route;
 use Arikaim\Core\Routes\RouteType;
-use Arikaim\Core\Routes\RouteParser;
 use Exception;
 
 /**
@@ -70,7 +69,7 @@ class Routes implements RoutesInterface
      * @param string $handlerClass
      * @return array|null
      */
-    protected function resolveMiddlewares($handlerClass)
+    protected function resolveMiddlewares(string $handlerClass): ?array
     {
         if (\class_exists($handlerClass) == false) {
             return null;
@@ -89,7 +88,7 @@ class Routes implements RoutesInterface
      * @param integer   $status
      * @return boolean
      */
-    public function setRoutesStatus($filter = [], $status)
+    public function setRoutesStatus(array $filter = [], int $status): bool
     {
         return $this->adapter->setRoutesStatus($filter,$status);
     }
@@ -102,7 +101,7 @@ class Routes implements RoutesInterface
      * @param string $url
      * @return boolean
      */
-    public function setRedirectUrl($method, $pattern, $url)
+    public function setRedirectUrl(string $method, string $pattern, string $url): bool
     {
         return $this->adapter->saveRedirectUrl($method,$pattern,$url);
     }
@@ -112,17 +111,28 @@ class Routes implements RoutesInterface
      *
      * @param string $pattern
      * @param string $handlerClass
-     * @param string $handlerMethod
+     * @param string|null $handlerMethod
      * @param string $templateName
-     * @param string $pageName
-     * @param integer $auth
+     * @param string|null $pageName
+     * @param integer|null $auth
      * @param boolean $replace 
      * @param string|null $redirectUrl 
      * @param integer $type 
      * @param boolean $withLanguage
      * @return bool
      */
-    public function saveTemplateRoute($pattern, $handlerClass, $handlerMethod, $templateName, $pageName, $auth = null, $replace = false, $redirectUrl = null, $type = Self::PAGE, $withLanguage = true)
+    public function saveTemplateRoute(
+        string $pattern, 
+        string $handlerClass, 
+        ?string $handlerMethod, 
+        string $templateName, 
+        ?string $pageName, 
+        ?string $auth = null, 
+        bool $replace = false, 
+        ?string $redirectUrl = null,
+        int $type = Self::PAGE, 
+        bool $withLanguage = true
+    ): bool
     {
         $handlerMethod = ($handlerMethod == null) ? 'pageLoad' : $handlerMethod;
         $languagePattern = Route::getLanguagePattern($pattern);
@@ -253,7 +263,7 @@ class Routes implements RoutesInterface
      * @param string $pattern
      * @return string
      */
-    public function getLanguagePattern($pattern)
+    public function getLanguagePattern(string $pattern): string
     {
         return Route::getLanguagePattern($pattern);
     }
@@ -264,19 +274,27 @@ class Routes implements RoutesInterface
      * @param string $method
      * @param string $pattern
      * @param string $handlerClass
-     * @param string $handlerMethod
-     * @param string $extension
+     * @param string|null $handlerMethod
+     * @param string|null $extension
      * @param integer|null $auth
      * @return bool
      * @throws Exception
      */
-    public function addApiRoute($method, $pattern, $handlerClass, $handlerMethod, $extension, $auth = null)
+    public function addApiRoute(
+        string $method,
+        string $pattern, 
+        string $handlerClass, 
+        ?string $handlerMethod, 
+        ?string $extension, 
+        ?string $auth = null
+    ): bool
     {
         if (Route::isValidPattern($pattern) == false) {           
             return false;
         }      
         if (RouteType::isValidApiRoutePattern($pattern) == false) {
             throw new Exception('Not valid api route pattern.',1);
+            return false;
         }
 
         $middlewares = $this->resolveMiddlewares($handlerClass);
@@ -309,7 +327,7 @@ class Routes implements RoutesInterface
      * @param string $pattern
      * @return boolean
      */
-    public function has($method, $pattern)
+    public function has(string $method, string $pattern): bool
     {
         return $this->adapter->hasRoute($method,$pattern);
     }
@@ -321,7 +339,7 @@ class Routes implements RoutesInterface
      * @param string $pattern
      * @return bool
      */
-    public function delete($method, $pattern)
+    public function delete(string $method, string $pattern): bool
     {
         return $this->adapter->deleteRoute($method,$pattern);
     }
@@ -334,7 +352,7 @@ class Routes implements RoutesInterface
      * @param array $options
      * @return boolean
      */
-    public function saveRouteOptions($method, $pattern, $options)
+    public function saveRouteOptions(string $method, string $pattern, $options): bool
     {
         return $this->adapter->saveRouteOptions($method,$pattern,$options);
     }
@@ -344,7 +362,7 @@ class Routes implements RoutesInterface
      *
      * @return boolean
      */
-    public function deleteHomePage()
+    public function deleteHomePage(): bool
     {
         return $this->adapter->deleteRoutes(['type' => Self::HOME_PAGE]);
     }
@@ -355,7 +373,7 @@ class Routes implements RoutesInterface
      * @param array $filterfilter
      * @return boolean
      */
-    public function deleteRoutes($filter = [])
+    public function deleteRoutes($filter = []): bool
     {
         return $this->adapter->deleteRoutes($filter);
     }
@@ -367,7 +385,7 @@ class Routes implements RoutesInterface
      * @param string $pattern
      * @return array|false
     */
-    public function getRoute($method, $pattern)
+    public function getRoute(string $method, string $pattern)
     {
         return $this->adapter->getRoute($method,$pattern);
     }
@@ -378,7 +396,7 @@ class Routes implements RoutesInterface
      * @param array $filter  
      * @return array
      */
-    public function getRoutes($filter = [])
+    public function getRoutes(array $filter = [])
     {
         return $this->adapter->getRoutes($filter);
     }
@@ -406,7 +424,7 @@ class Routes implements RoutesInterface
      * @param int|null $type
      * @return array
      */
-    public function searchRoutes($method, $type = null)
+    public function searchRoutes(string $method, $type = null)
     {
         $cacheItemkey = 'routes.list.' . $method . '.' . $type ?? 'all';
         $routes = $this->cache->fetch($cacheItemkey);  
@@ -423,7 +441,7 @@ class Routes implements RoutesInterface
      *
      * @return array
      */
-    public function getHomePageRoute()
+    public function getHomePageRoute(): array
     {
         return $this->adapter->getHomePageRoute();
     }

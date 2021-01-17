@@ -25,31 +25,34 @@ class RouteType
     /**
      * Get route type
      */
-    public static function getType($url) 
+    public static function getType(string $url): int 
     {
         $url = \rtrim(\str_replace(BASE_PATH,'',$url),'/');
         $segments = \explode('/',$url);
         $count = \count($segments);
-    
-        // check for home page
-        if (($count == 1) || ($count == 2 && Self::isLanguageSegment($segments) == true)) {
-            return Self::HOME_PAGE_URL;
-        }
-        // check for admin 
-        if (($segments[1] == 'admin') && ($count <= 3)) {
-            return Self::ADMIN_PAGE_URL;
-        }
+        
         // check for system api 
         $segments[1] = $segments[1] ?? '';
         $segments[2] = $segments[2] ?? '';
-        if ($segments[1] == 'core' && $segments[2] == 'api') {
+        if ($segments[1] == 'core' && $segments[2] == 'api') {            
             return Self::SYSTEM_API_URL;
         }
+
         // check for api 
         if ($segments[1] == 'api') {
             return Self::API_URL;
         }
 
+        // check for admin 
+        if (($segments[1] == 'admin') && ($count <= 3)) {
+            return Self::ADMIN_PAGE_URL;
+        }
+
+        // check for home page
+        if (($count == 1) || ($count == 2 && Self::isLanguageSegment($segments) == true)) {
+            return Self::HOME_PAGE_URL;
+        }
+       
         return Self::UNKNOW_TYPE;
     }
 
@@ -59,7 +62,7 @@ class RouteType
      * @param array $urlSegments
      * @return boolean
      */
-    public static function isLanguageSegment(array $urlSegments)
+    public static function isLanguageSegment(array $urlSegments): bool
     {
         return (\strlen(\last($urlSegments)) == 2);
     }
@@ -70,7 +73,7 @@ class RouteType
      * @param string $url
      * @return boolean
      */
-    public static function isSystemApiUrl($url)
+    public static function isSystemApiUrl(string $url): bool
     {
         $path = \str_replace(BASE_PATH,'',$url);
  
@@ -83,7 +86,7 @@ class RouteType
      * @param string $url
      * @return boolean
      */
-    public static function isAdminPage($url)
+    public static function isAdminPage(string $url): bool
     {
         $path = \str_replace(BASE_PATH,'',$url);
 
@@ -95,7 +98,7 @@ class RouteType
      *
      * @return boolean
      */
-    public static function isApiInstallRequest()
+    public static function isApiInstallRequest(): bool
     {
         $uri = $_SERVER['REQUEST_URI'] ?? '';
        
@@ -107,7 +110,7 @@ class RouteType
      *
      * @return boolean
      */
-    public static function isInstallPage()
+    public static function isInstallPage(): bool
     {
         $uri = $_SERVER['REQUEST_URI'] ?? '';
        
@@ -130,7 +133,7 @@ class RouteType
      * @param string $pattern
      * @return boolean
      */
-    public static function isValidApiRoutePattern($pattern)
+    public static function isValidApiRoutePattern(string $pattern): bool
     {
         return (\substr($pattern,0,4) == '/api');
     }

@@ -22,9 +22,10 @@ class Route
     /**
      * Return true if route pattern have placeholder
      *
+     * @param string $pattern
      * @return boolean
      */
-    public static function hasPlaceholder($pattern)
+    public static function hasPlaceholder(string $pattern): bool
     {
         return \preg_match('/\{(.*?)\}/',$pattern);
     }
@@ -35,7 +36,7 @@ class Route
      * @param string $path
      * @return string
      */
-    public static function getLanguagePattern($path)
+    public static function getLanguagePattern(string $path): string
     {        
         return (\substr($path,-1) == '/') ? '[{language:[a-z]{2}}/]' : '[/{language:[a-z]{2}}/]';
     }
@@ -46,7 +47,7 @@ class Route
      * @param string $path
      * @return string
      */
-    public static function getPagePattern($path = '')
+    public static function getPagePattern(string $path = ''): string
     {
         return (\substr($path,-1) == '/') ? '[{page:\d+}]' : '[/{page:\d+}]';
     }
@@ -59,7 +60,7 @@ class Route
      * @param array  $queryParams
      * @return string
      */
-    public static function getRouteUrl($pattern, array $data = [], array $queryParams = [])
+    public static function getRouteUrl(string $pattern, array $data = [], array $queryParams = []): string
     {      
         if (Self::hasPlaceholder($pattern) == false) {           
             return $pattern;
@@ -105,7 +106,7 @@ class Route
      * @param string $pattern
      * @return boolean
      */
-    public static function isValidPattern($pattern)
+    public static function isValidPattern(string $pattern): bool
     {
         $parser = new Std();
         try {
@@ -125,7 +126,7 @@ class Route
      * @param array $routes
      * @return boolean
      */
-    public static function validate($method, $pattern, $routes)
+    public static function validate(string $method, string $pattern, $routes)
     {       
         $collector = Self::createRouteCollector();
 
