@@ -19,7 +19,7 @@ interface RoutesStorageInterface
      *
      * @return array
      */
-    public function getHomePageRoute();
+    public function getHomePageRoute(): array;
     
     /**
      * Get routes list for request method
@@ -28,7 +28,7 @@ interface RoutesStorageInterface
      * @param int|null $type
      * @return array
      */
-    public function searchRoutes($method, $type = null);
+    public function searchRoutes(string $method, ?int $type = null): array;
     
     /**
      * Save route redirect url
@@ -38,7 +38,7 @@ interface RoutesStorageInterface
      * @param string $url
      * @return boolean
      */
-    public function saveRedirectUrl($method, $pattern, $url);
+    public function saveRedirectUrl(string $method, string $pattern, string $url): bool;
 
     /**
      * Get extension routes
@@ -46,24 +46,24 @@ interface RoutesStorageInterface
      * @param array $filterfilter
      * @return array
      */
-    public function getRoutes($filter = []);
+    public function getRoutes(array $filter = []): array;
 
     /**
      * Delete routes
      *
-     * @param array $filterfilter
+     * @param array $filter
      * @return boolean
      */
-    public function deleteRoutes($filter = []);
+    public function deleteRoutes(array $filter = []): bool;
 
     /**
      * Set routes status
      *
-     * @param array     $filterfilter
+     * @param array     $filter
      * @param integer   $status
      * @return boolean
      */
-    public function setRoutesStatus($filter = [], $status);
+    public function setRoutesStatus(array $filter = [], int $status): bool;
 
     /**
      * Add route
@@ -71,7 +71,7 @@ interface RoutesStorageInterface
      * @param array $details
      * @return boolean
      */
-    public function addRoute(array $details);
+    public function addRoute(array $details): bool;
 
     /**
      * Save route options
@@ -81,7 +81,7 @@ interface RoutesStorageInterface
      * @param array $options
      * @return boolean
      */
-    public function saveRouteOptions($method, $pattern, array $options);
+    public function saveRouteOptions(string $method, string $pattern, array $options): bool;
 
     /**
      * Return true if reoute exists
@@ -90,7 +90,7 @@ interface RoutesStorageInterface
      * @param string $pattern
      * @return boolean
      */
-    public function hasRoute($method, $pattern);
+    public function hasRoute(string $method, string $pattern): bool;
 
     /**
      * Delete route
@@ -99,7 +99,7 @@ interface RoutesStorageInterface
      * @param string $pattern
      * @return bool
      */
-    public function deleteRoute($method, $pattern);
+    public function deleteRoute(string $method, string $pattern): bool;
 
     /**
      * Get route
@@ -108,5 +108,5 @@ interface RoutesStorageInterface
      * @param string $pattern
      * @return array|false
     */
-    public function getRoute($method, $pattern);
+    public function getRoute(string $method, string $pattern);
 }
