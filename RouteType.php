@@ -34,6 +34,7 @@ class RouteType
         // check for system api 
         $segments[1] = $segments[1] ?? '';
         $segments[2] = $segments[2] ?? '';
+
         if ($segments[1] == 'core' && $segments[2] == 'api') {            
             return Self::SYSTEM_API_URL;
         }
@@ -49,8 +50,13 @@ class RouteType
         }
 
         // check for home page
-        if (($count == 1) || ($count == 2 && Self::isLanguageSegment($segments) == true)) {
-            return Self::HOME_PAGE_URL;
+        if ($count == 1 || $count == 2) {
+            if (empty($segments[1]) == true && empty($segments[2])== true) {              
+                return Self::HOME_PAGE_URL;
+            }
+            if (Self::isLanguageSegment([$segments[0],$segments[1]]) == true) {               
+                return Self::HOME_PAGE_URL;
+            }
         }
        
         return Self::UNKNOW_TYPE;
