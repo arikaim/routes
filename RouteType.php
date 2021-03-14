@@ -21,6 +21,7 @@ class RouteType
     const ADMIN_PAGE_URL = 2;
     const SYSTEM_API_URL = 3;
     const API_URL        = 4;
+    const ADMIN_API_URL  = 5;
 
     /**
      * Get route type
@@ -34,6 +35,7 @@ class RouteType
         // check for system api 
         $segments[1] = $segments[1] ?? '';
         $segments[2] = $segments[2] ?? '';
+        $segments[3] = $segments[3] ?? '';
 
         if ($segments[1] == 'core' && $segments[2] == 'api') {            
             return Self::SYSTEM_API_URL;
@@ -41,7 +43,7 @@ class RouteType
 
         // check for api 
         if ($segments[1] == 'api') {
-            return Self::API_URL;
+            return ($segments[3] == 'admin' || $segments[2] == 'admin') ? Self::ADMIN_API_URL : Self::API_URL;
         }
 
         // check for admin 

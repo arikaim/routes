@@ -15,6 +15,16 @@ namespace Arikaim\Core\Routes;
 interface RoutesStorageInterface
 {    
     /**
+     * Add route middleware
+     *
+     * @param string $method
+     * @param string $pattern
+     * @param string $middlewareClass
+     * @return bool
+     */
+    public function addMiddleware(string $method, string $pattern, string $middlewareClass): bool;
+
+    /**
      * Get home page route
      *
      * @return array
@@ -109,4 +119,12 @@ interface RoutesStorageInterface
      * @return array|false
     */
     public function getRoute(string $method, string $pattern);
+
+    /**
+     * Get route details
+     *
+     * @param string|int $id  Route id or uuid
+     * @return array|null
+     */
+    public function getRouteDetails($id): ?array;
 }

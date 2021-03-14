@@ -22,13 +22,6 @@ use Exception;
 class Routes implements RoutesInterface
 {
     /**
-     *  Route type constant
-     */
-    const PAGE      = 1;
-    const API       = 2;
-    const HOME_PAGE = 3;
-
-    /**
      * Cache save time
      *
      * @var integer
@@ -61,6 +54,19 @@ class Routes implements RoutesInterface
         $this->cache = $cache;
 
         Self::$cacheSaveTime = \defined('CACHE_SAVE_TIME') ? \constant('CACHE_SAVE_TIME') : Self::$cacheSaveTime;
+    }
+
+    /**
+     * Add route middleware
+     *
+     * @param string $method
+     * @param string $pattern
+     * @param string $middlewareClass
+     * @return bool
+     */
+    public function addMiddleware(string $method, string $pattern, string $middlewareClass): bool
+    {
+        return $this->adapter->addMiddleware($method,$pattern,$middlewareClass);
     }
 
     /**
@@ -127,10 +133,10 @@ class Routes implements RoutesInterface
         ?string $handlerMethod, 
         string $templateName, 
         ?string $pageName, 
-        ?string $auth = null, 
+        $auth = null, 
         bool $replace = false, 
         ?string $redirectUrl = null,
-        int $type = Self::PAGE, 
+        int $type = RoutesInterface::PAGE, 
         bool $withLanguage = true
     ): bool
     {
@@ -140,7 +146,7 @@ class Routes implements RoutesInterface
         if ($replace == true) {           
             $this->delete('GET',$pattern);
             $this->delete('GET',$pattern . $languagePattern);
-            if ($type == Self::HOME_PAGE) {
+            if ($type == RoutesInterface::HOME_PAGE) {
                 $this->deleteHomePage();
             }           
         }
@@ -190,16 +196,35 @@ class Routes implements RoutesInterface
      * @param string $pattern
      * @param string $handlerClass
      * @param string $handlerMethod
-     * @param string $extension
+     * @param string|null $extension
      * @param string $pageName
      * @param integer $auth  
      * @param string|null $name
      * @param boolean $withLanguage
      * @return bool
      */
-    public function addHomePageRoute($pattern, $handlerClass, $handlerMethod, $extension, $pageName, $auth = null, $name = null, $withLanguage = true)
+    public function addHomePageRoute(
+        string $pattern, 
+        string $handlerClass, 
+        string $handlerMethod, 
+        ?string $extension, 
+        $pageName, 
+        $auth = null, 
+        ?string $name = null, 
+        bool $withLanguage = true
+    )
     {
-        return $this->addPageRoute($pattern,$handlerClass,$handlerMethod,$extension,$pageName,$auth,$name,$withLanguage,Self::HOME_PAGE);
+        return $this->addPageRoute(
+            $pattern,
+            $handlerClass,
+            $handlerMethod,
+            $extension,
+            $pageName,
+            $auth,
+            $name,
+            $withLanguage,
+            RoutesInterface::HOME_PAGE
+        );
     }
 
     /**
@@ -216,7 +241,17 @@ class Routes implements RoutesInterface
      * @param integer $type
      * @return bool
      */
-    public function addPageRoute($pattern, $handlerClass, $handlerMethod, $extension, $pageName, $auth = null, $name = null, $withLanguage = true, $type = Self::PAGE)
+    public function addPageRoute(
+        string $pattern, 
+        string $handlerClass, 
+        string $handlerMethod, 
+        string $extension, 
+        string $pageName, 
+        ?string $auth = null, 
+        ?string $name = null, 
+        bool $withLanguage = true, 
+        $type = RoutesInterface::PAGE
+    )
     {
         if (Route::isValidPattern($pattern) == false) {           
             return false;
@@ -232,8 +267,8 @@ class Routes implements RoutesInterface
         }
 
         $pattern = ($withLanguage == true) ? $pattern . $languagePattern : $pattern;
-
         $middlewares = $this->resolveMiddlewares($handlerClass);
+
         $route = [
             'method'         => 'GET',
             'pattern'        => $pattern,
@@ -277,6 +312,7 @@ class Routes implements RoutesInterface
      * @param string|null $handlerMethod
      * @param string|null $extension
      * @param integer|null $auth
+     * @param int $type
      * @return bool
      * @throws Exception
      */
@@ -286,7 +322,8 @@ class Routes implements RoutesInterface
         string $handlerClass, 
         ?string $handlerMethod, 
         ?string $extension, 
-        ?string $auth = null
+        ?string $auth = null,
+        int $type = RoutesInterface::API
     ): bool
     {
         if (Route::isValidPattern($pattern) == false) {           
@@ -305,7 +342,7 @@ class Routes implements RoutesInterface
             'handler_class'  => $handlerClass,
             'handler_method' => $handlerMethod,
             'auth'           => $auth,
-            'type'           => Self::API,
+            'type'           => $type,
             'regex'          => null,
             'extension_name' => $extension,
             'middlewares'    => (empty($middlewares) == false) ? \json_encode($middlewares) : null
@@ -364,7 +401,7 @@ class Routes implements RoutesInterface
      */
     public function deleteHomePage(): bool
     {
-        return $this->adapter->deleteRoutes(['type' => Self::HOME_PAGE]);
+        return $this->adapter->deleteRoutes(['type' => RoutesInterface::HOME_PAGE]);
     }
 
     /**
@@ -388,6 +425,17 @@ class Routes implements RoutesInterface
     public function getRoute(string $method, string $pattern)
     {
         return $this->adapter->getRoute($method,$pattern);
+    }
+
+    /**
+     * Get route details
+     *
+     * @param string|int $id  Route id or uuid
+     * @return array|null
+     */
+    public function getRouteDetails($id): ?array
+    {
+        return $this->adapter->getRouteDetails($id);
     }
 
     /**
