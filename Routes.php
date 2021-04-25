@@ -52,8 +52,6 @@ class Routes implements RoutesInterface
     {
         $this->adapter = $adapter;    
         $this->cache = $cache;
-
-        Self::$cacheSaveTime = \defined('CACHE_SAVE_TIME') ? \constant('CACHE_SAVE_TIME') : Self::$cacheSaveTime;
     }
 
     /**
