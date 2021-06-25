@@ -22,13 +22,6 @@ use Exception;
 class Routes implements RoutesInterface
 {
     /**
-     * Cache save time
-     *
-     * @var integer
-     */
-    public static $cacheSaveTime = 4;
-
-    /**
      * Routes storage adapter
      *
      * @var RoutesStorageInterface
@@ -430,7 +423,7 @@ class Routes implements RoutesInterface
         $routes = $this->cache->fetch('routes.list');  
         if ($routes === false) {
             $routes = $this->getRoutes(['status' => 1]);  
-            $this->cache->save('routes.list',$routes,Self::$cacheSaveTime);         
+            $this->cache->save('routes.list',$routes);         
         }
 
         return $routes;
@@ -449,7 +442,7 @@ class Routes implements RoutesInterface
         $routes = $this->cache->fetch($cacheItemkey);  
         if ($routes === false) {
             $routes = $this->adapter->searchRoutes($method,$type);
-            $this->cache->save($cacheItemkey,$routes,Self::$cacheSaveTime);   
+            $this->cache->save($cacheItemkey,$routes);   
         }
         
         return $routes;

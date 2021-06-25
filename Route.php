@@ -143,9 +143,7 @@ class Route
             return true;
         };
 
-        $result = $callback($collector);
-      
-        return $result;
+        return $callback($collector);       
     }
 
     /**
