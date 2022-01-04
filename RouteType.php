@@ -104,23 +104,26 @@ class RouteType
     /**
      * Return true if request is for installation 
      *
+     * @param string|null $uri
      * @return boolean
      */
-    public static function isApiInstallRequest(): bool
+    public static function isApiInstallRequest(?string $uri = null): bool
     {
-        $uri = $_SERVER['REQUEST_URI'] ?? '';
-       
-        return (\substr($uri,-17) == 'core/api/install/');
+        $uri = $uri ?? $_SERVER['REQUEST_URI'] ?? '';
+        $path = \str_replace(BASE_PATH,'',$uri);
+    
+        return (\substr($path,0,18) == '/core/api/install/');
     }
 
     /**
      * Check for install page url
-     *
+     * 
+     * @param string|null $uri
      * @return boolean
      */
-    public static function isInstallPage(): bool
+    public static function isInstallPage(?string $uri = null): bool
     {
-        $uri = $_SERVER['REQUEST_URI'] ?? '';
+        $uri = $uri ?? $_SERVER['REQUEST_URI'] ?? '';
        
         return (\substr($uri,-13) == Self::INSTALL_PAGE_URL_PATH);
     }

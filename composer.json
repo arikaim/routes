@@ -10,8 +10,7 @@
         "homepage": "http://arikaim.com"
     }],
     "homepage": "http://arikaim.com",
-    "require": {
-        "php": ">=7.1",
+    "require": {        
         "arikaim/interfaces": "^1.0.0"
     },
     "autoload": {       
