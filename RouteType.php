@@ -25,8 +25,12 @@ class RouteType
 
     /**
      * Get route type
+     * 
+     * @param string $path
+     * @param array $options
+     * @return int
      */
-    public static function getType(string $url): int 
+    public static function getType(string $url, array $options = []): int 
     {
         $url = \rtrim(\str_replace(BASE_PATH,'',$url),'/');
         $segments = \explode('/',$url);
@@ -36,6 +40,7 @@ class RouteType
         $segments[1] = $segments[1] ?? '';
         $segments[2] = $segments[2] ?? '';
         $segments[3] = $segments[3] ?? '';
+        $adminPagePath = $options['adminPagePath'] ?? 'admin';
 
         if ($segments[1] == 'core' && $segments[2] == 'api') {            
             return Self::SYSTEM_API_URL;
@@ -47,7 +52,7 @@ class RouteType
         }
 
         // check for admin 
-        if (($segments[1] == 'admin') && ($count <= 3)) {
+        if (($segments[1] == $adminPagePath) && ($count <= 3)) {
             return Self::ADMIN_PAGE_URL;
         }
 
@@ -83,22 +88,7 @@ class RouteType
      */
     public static function isSystemApiUrl(string $url): bool
     {
-        $path = \str_replace(BASE_PATH,'',$url);
- 
-        return (\substr($path,0,10) == '/core/api/');
-    }
-
-    /**
-     * Return true if request url is admin page 
-     *
-     * @param string $url
-     * @return boolean
-     */
-    public static function isAdminPage(string $url): bool
-    {
-        $path = \str_replace(BASE_PATH,'',$url);
-
-        return (\substr($path,0,6) == '/admin');
+        return (\substr(\str_replace(BASE_PATH,'',$url),0,10) == '/core/api/');
     }
 
     /**
@@ -110,9 +100,8 @@ class RouteType
     public static function isApiInstallRequest(?string $uri = null): bool
     {
         $uri = $uri ?? $_SERVER['REQUEST_URI'] ?? '';
-        $path = \str_replace(BASE_PATH,'',$uri);
     
-        return (\substr($path,0,18) == '/core/api/install/');
+        return (\substr(\str_replace(BASE_PATH,'',$uri),0,18) == '/core/api/install/');
     }
 
     /**
