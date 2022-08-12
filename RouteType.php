@@ -22,6 +22,7 @@ class RouteType
     const SYSTEM_API_URL = 3;
     const API_URL        = 4;
     const ADMIN_API_URL  = 5;
+    const INSTALL_PAGE   = 6;
 
     /**
      * Get route type
@@ -66,7 +67,7 @@ class RouteType
             }
         }
        
-        return Self::UNKNOW_TYPE;
+        return (Self::isInstallPage($url) == true) ? Self::INSTALL_PAGE : Self::UNKNOW_TYPE;
     }
 
     /**

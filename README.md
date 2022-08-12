@@ -6,9 +6,6 @@ Routes manager for Arikaim CMS.
 This package is part of arikaim/core package.
 
 
-#### Requirements 
-  * PHP 7.3, 7.4
-
 
 #### Installation
 

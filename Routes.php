@@ -139,7 +139,13 @@ class Routes implements RoutesInterface
             return false;
         }
        
-        $route = [
+        $this->cache->delete('routes.list');
+
+        if (Route::validate('GET',$pattern,$this->getAllRoutes()) == false) {
+            return false;
+        }
+     
+        return $this->adapter->addRoute([
             'method'         => 'GET',
             'pattern'        => $pattern,
             'handler_class'  => $handlerClass,
@@ -149,15 +155,7 @@ class Routes implements RoutesInterface
             'page_name'      => $pageName,
             'template_name'  => $templateName,
             'redirect_url'   => $redirectUrl
-        ];
-        
-        $this->cache->delete('routes.list');
-
-        if (Route::validate('GET',$pattern,$this->getAllRoutes()) == false) {
-            return false;
-        }
-     
-        return $this->adapter->addRoute($route);
+        ]);
     }
 
     /**
@@ -236,8 +234,14 @@ class Routes implements RoutesInterface
             return false;
         }
 
+        $this->cache->delete('routes.list');
+
         $pattern = ($withLanguage == true) ? $pattern . $languagePattern : $pattern;
-        $route = [
+        if (Route::validate('GET',$pattern,$this->getAllRoutes()) == false) {
+            return false;
+        }
+
+        return $this->adapter->addRoute([
             'method'         => 'GET',
             'pattern'        => $pattern,
             'handler_class'  => $handlerClass,
@@ -248,15 +252,7 @@ class Routes implements RoutesInterface
             'page_name'      => $pageName,
             'name'           => $name,
             'regex'          => null
-        ];
-
-        $this->cache->delete('routes.list');
-        
-        if (Route::validate('GET',$pattern,$this->getAllRoutes()) == false) {
-            return false;
-        }
-
-        return $this->adapter->addRoute($route);    
+        ]);    
     }
 
     /**
@@ -300,8 +296,14 @@ class Routes implements RoutesInterface
             throw new Exception('Not valid api route pattern.',1);
             return false;
         }
+ 
+        $this->cache->delete('routes.list');
 
-        $route = [
+        if (Route::validate($method,$pattern,$this->getAllRoutes()) == false) {
+            return false;
+        }
+
+        return $this->adapter->addRoute([
             'method'         => $method,
             'pattern'        => $pattern,
             'handler_class'  => $handlerClass,
@@ -310,15 +312,7 @@ class Routes implements RoutesInterface
             'type'           => $type,
             'regex'          => null,
             'extension_name' => $extension
-        ];
-        
-        $this->cache->delete('routes.list');
-
-        if (Route::validate($method,$pattern,$this->getAllRoutes()) == false) {
-            return false;
-        }
-
-        return $this->adapter->addRoute($route);    
+        ]);    
     }
 
     /**
