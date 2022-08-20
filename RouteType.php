@@ -34,6 +34,12 @@ class RouteType
     public static function getType(string $url, array $options = []): int 
     {
         $url = \rtrim(\str_replace(BASE_PATH,'',$url),'/');
+
+        if (\substr($url,-13) == Self::INSTALL_PAGE_URL_PATH) {
+            return Self::INSTALL_PAGE;
+        }
+
+
         $segments = \explode('/',$url);
         $count = \count($segments);
         
@@ -67,7 +73,7 @@ class RouteType
             }
         }
        
-        return (Self::isInstallPage($url) == true) ? Self::INSTALL_PAGE : Self::UNKNOW_TYPE;
+        return Self::UNKNOW_TYPE;
     }
 
     /**
