@@ -67,7 +67,7 @@ class Routes implements RoutesInterface
      * @param integer   $status
      * @return boolean
      */
-    public function setRoutesStatus(array $filter = [], int $status): bool
+    public function setRoutesStatus(array $filter, int $status): bool
     {
         return $this->adapter->setRoutesStatus($filter,$status);
     }

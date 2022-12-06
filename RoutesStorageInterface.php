@@ -73,7 +73,7 @@ interface RoutesStorageInterface
      * @param integer   $status
      * @return boolean
      */
-    public function setRoutesStatus(array $filter = [], int $status): bool;
+    public function setRoutesStatus(array $filter, int $status): bool;
 
     /**
      * Add route
