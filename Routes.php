@@ -11,7 +11,6 @@ namespace Arikaim\Core\Routes;
 
 use Arikaim\Core\Routes\RoutesStorageInterface;
 use Arikaim\Core\Interfaces\RoutesInterface;
-use Arikaim\Core\Interfaces\CacheInterface;
 use Arikaim\Core\Routes\Route;
 use Arikaim\Core\Routes\RouteType;
 use Exception;
@@ -29,22 +28,13 @@ class Routes implements RoutesInterface
     protected $adapter;
 
     /**
-     * Cache
-     *
-     * @var CacheInterface
-     */
-    protected $cache;
-
-    /**
      * Constructor
      * 
      * @param RoutesStorageInterface $adapter 
-     * @param CacheInterface $cache
      */
-    public function __construct(RoutesStorageInterface $adapter, CacheInterface $cache)
+    public function __construct(RoutesStorageInterface $adapter)
     {
         $this->adapter = $adapter;    
-        $this->cache = $cache;
     }
 
     /**
@@ -113,6 +103,8 @@ class Routes implements RoutesInterface
         bool $withLanguage = true
     ): bool
     {
+        global $arikaim;
+
         $handlerMethod = ($handlerMethod == null) ? 'pageLoad' : $handlerMethod;
         $languagePattern = Route::getLanguagePattern($pattern);
         
@@ -139,7 +131,7 @@ class Routes implements RoutesInterface
             return false;
         }
        
-        $this->cache->delete('routes.list');
+        $arikaim->get('cache')->delete('routes.list');
 
         if (Route::validate('GET',$pattern,$this->getAllRoutes()) == false) {
             return false;
@@ -221,6 +213,8 @@ class Routes implements RoutesInterface
         $type = RoutesInterface::PAGE
     )
     {
+        global $arikaim;
+
         if (Route::isValidPattern($pattern) == false) {           
             return false;
         }
@@ -234,7 +228,7 @@ class Routes implements RoutesInterface
             return false;
         }
 
-        $this->cache->delete('routes.list');
+        $arikaim->get('cache')->delete('routes.list');
 
         $pattern = ($withLanguage == true) ? $pattern . $languagePattern : $pattern;
         if (Route::validate('GET',$pattern,$this->getAllRoutes()) == false) {
@@ -289,6 +283,8 @@ class Routes implements RoutesInterface
         int $type = RoutesInterface::API
     ): bool
     {
+        global $arikaim;
+
         if (Route::isValidPattern($pattern) == false) {           
             return false;
         }      
@@ -297,7 +293,7 @@ class Routes implements RoutesInterface
             return false;
         }
  
-        $this->cache->delete('routes.list');
+        $arikaim->get('cache')->delete('routes.list');
 
         if (Route::validate($method,$pattern,$this->getAllRoutes()) == false) {
             return false;
@@ -414,10 +410,12 @@ class Routes implements RoutesInterface
      */
     public function getAllRoutes()
     {
-        $routes = $this->cache->fetch('routes.list');  
+        global $arikaim;
+
+        $routes = $arikaim->get('cache')->fetch('routes.list');  
         if ($routes === false) {
             $routes = $this->getRoutes(['status' => 1]);  
-            $this->cache->save('routes.list',$routes);         
+            $arikaim->get('cache')->save('routes.list',$routes);         
         }
 
         return $routes;
@@ -432,11 +430,13 @@ class Routes implements RoutesInterface
      */
     public function searchRoutes(string $method, $type = null): array
     {
+        global $arikaim;
+
         $cacheItemkey = 'routes.list.' . $method . '.' . ($type ?? 'all');
-        $routes = $this->cache->fetch($cacheItemkey);  
+        $routes = $arikaim->get('cache')->fetch($cacheItemkey);  
         if ($routes === false) {
             $routes = $this->adapter->searchRoutes($method,$type);
-            $this->cache->save($cacheItemkey,$routes);   
+            $arikaim->get('cache')->save($cacheItemkey,$routes);   
         }
         
         return $routes;
