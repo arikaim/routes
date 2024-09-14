@@ -38,6 +38,22 @@ class Routes implements RoutesInterface
     }
 
     /**
+     * Get route url path
+     *
+     * @param string $name
+     * @param array  $params
+     * @return string|false
+     */
+    public function getUrlPath(string $name, array $params = [])
+    {
+        $route = $this->getRoutes([
+            'name' => $name
+        ]);
+
+        return (isset($route[0]) == false) ? false : Route::getRouteUrl($route[0]['pattern'],$params);
+    }
+
+    /**
      * Add route middleware
      *
      * @param string $method
